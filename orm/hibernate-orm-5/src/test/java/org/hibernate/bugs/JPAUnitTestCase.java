@@ -21,6 +21,8 @@ public class JPAUnitTestCase {
 
 	private EntityManagerFactory entityManagerFactory;
 
+        private int a_id;
+        
 	@Before
 	public void init() {
             entityManagerFactory = Persistence.createEntityManagerFactory( "templatePU" );
@@ -47,6 +49,13 @@ public class JPAUnitTestCase {
 
             entityManager.persist(a);
 
+            A _a = entityManager.createQuery(
+                        "select a " +
+                        "from A a", A.class)
+                    .getSingleResult();
+            
+            a_id = _a.getId();
+            
             entityManager.getTransaction().commit();
             entityManager.close();
 	}
@@ -60,13 +69,10 @@ public class JPAUnitTestCase {
 	public void multipleOneToOneRelationToTheSameTypeOfEntityTest() throws Exception {
 		EntityManager entityManager = entityManagerFactory.createEntityManager();
 		entityManager.getTransaction().begin();
-
-                A _a = entityManager.createQuery(
-                        "select a " +
-                        "from A a", A.class)
-                    .getSingleResult();
+ 
+                A a = entityManager.find(A.class, a_id);
                 
-                assertEquals("a_1", _a.getSomeField());
+                assertEquals("a_1", a.getSomeField());
                 
 		entityManager.getTransaction().commit();
 		entityManager.close();
